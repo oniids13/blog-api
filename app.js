@@ -2,6 +2,8 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
+//Router modules
+const userRouter = require('./routes/userRouter');
 
 const app = express();
 
@@ -15,6 +17,8 @@ app.get('/', (req, res) => {
     res.json({message: 'Hello!'})
 })
 
+// Routes
+app.use('/user', userRouter);
 
 
 
