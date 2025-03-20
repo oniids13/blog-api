@@ -24,7 +24,7 @@ model User {
   hash String
   posts Post[]
   comments Comment[]
-
+  role Role @default(BASIC)
 }
 
 
@@ -36,6 +36,7 @@ model Post {
   author User @relation(fields: [authorId], references: [id])
   authorId String
   comments Comment[]
+  published Boolean @default(false)
 }
 
 model Comment {
@@ -46,4 +47,9 @@ model Comment {
   authorId String
   post Post @relation(fields: [postId], references: [id])
   postId String
+}
+
+enum Role {
+  BASIC
+  ADMIN
 }

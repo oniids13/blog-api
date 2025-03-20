@@ -35,14 +35,18 @@ const postCreateUser = [validateUser, async (req, res) => {
     }
 
     try {
-        const { fullname, username, email, password } = req.body;
+        const { fullname, username, email, password, isAdmin } = req.body;
 
         const saltHash = genPassword(password);
 
         const salt = saltHash.salt;
         const hash = saltHash.hash;
+        let role ='';
+        if (isAdmin) {
+            role = 'ADMIN';
+        }
 
-        const newUser = await createUser(fullname, username, email, salt, hash);
+        const newUser = await createUser(fullname, username, email, salt, hash, role);
 
         return res.json({Sucess: newUser});
     } catch (err) {
