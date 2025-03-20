@@ -4,7 +4,7 @@ const userRouter = Router();
 
 
 
-userRouter.post('/signup', postCreateUser);
+userRouter.post('/', postCreateUser);
 
 
 module.exports = userRouter;

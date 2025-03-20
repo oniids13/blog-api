@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { validPassword } = require('../lib/passwordUtil');
 
 const createUser = async (fullname, username, email, salt, hash) => {
     try {
@@ -28,25 +29,27 @@ const createUser = async (fullname, username, email, salt, hash) => {
 }
 
 
-const createPost = async (title, content, author, authorId) => {
+const createPost = async (title, content, authorId) => {
     try { 
         const newPost = await prisma.post.create({
             data: {
                 title,
                 content,
-                author,
-                authorId
+                author: {connect: {id: authorId}}
             },
             select: {
+                id: true,
                 title: true,
                 content: true,
-                author: true,
+                author: { select: {username: true}},
                 authorId: true
             }
         })
+        console.log(newPost)
         return newPost
     } catch (err) {
         console.error('Error creating new post: ', err)
+        throw err;
     }
     
 }
@@ -55,13 +58,28 @@ const createPost = async (title, content, author, authorId) => {
 const getAllPost = async () => {
     try {
         const posts = await prisma.post.findMany({
-            include: {
-                author: true,
+            select: {
+                id: true,
+                title: true,
+                content: true,
                 createdAt: true,
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                    }
+                },
                 comments: {
-                    include: {
-                        author: true,
-                        createdAt: true
+                    select: {
+                        id: true,
+                        content: true,
+                        createdAt: true,
+                        author: {
+                            select: {
+                                id: true,
+                                username: true,             
+                            }
+                        }
                     }
                 }
             }
@@ -75,4 +93,54 @@ const getAllPost = async () => {
 }
 
 
-module.exports = { createUser, createPost, getAllPost };
+const getUserLogIn = async (email, password) => {
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email
+            },
+            select: {
+                id: true,
+                fullname: true,
+                username: true,
+                email: true,
+                salt: true,
+                hash: true
+            }
+        })
+        if (!user) {
+            return {message: 'Email address not found!'}
+        }
+        const isValid = validPassword(password, user.hash, user.salt);
+
+        if (isValid) {
+            return user;
+        } else {
+            return {message: 'Incorrect Password'}
+        }
+    } catch (err) {
+        console.error(err)
+        return {error: err}
+    }
+}
+
+const getUser = async (id) => {
+    if (!id) {
+        console.error('undefined ID');
+        return null;
+    }
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        });
+        return user
+    } catch (err) {
+        console.error
+        return {error: err}
+    }
+}
+
+module.exports = { createUser, createPost, getAllPost, getUserLogIn, getUser };
