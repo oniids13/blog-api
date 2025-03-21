@@ -2,7 +2,7 @@ const { getAllPost, createPost, createComment } = require('../model/prismaQuerie
 
 
 
-const getHome = async (req, res) => {
+const getAllPosts = async (req, res) => {
     try {
         const publishedPosts = await getAllPost(true);
         const unpublishedPosts = await getAllPost(false);
@@ -68,4 +68,4 @@ const postCreateComment = async (req, res) => {
 }
 
 
-module.exports = { getHome, postCreatePost, postCreateComment };
+module.exports = { getAllPosts, postCreatePost, postCreateComment };

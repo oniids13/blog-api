@@ -4,7 +4,7 @@ const passport = require('passport');
 //Router modules
 const userRouter = require('./routes/userRouter');
 const loginRouter = require('./routes/loginRouter');
-const homeRouter = require('./routes/homeRouter');
+const postsRouter = require('./routes/postsRouter');
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
-app.use('/home', homeRouter);
+app.use('/posts', postsRouter);
 
 app.listen(3000, () => {
     console.log('http://localhost:3000');

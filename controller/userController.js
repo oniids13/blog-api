@@ -1,6 +1,6 @@
 const { body, validationResult } = require('express-validator');
 const {genPassword} = require('../lib/passwordUtil');
-const { createUser, updateUser } = require('../model/prismaQueries');
+const { createUser, updateUser, deleteUser, getAllUser } = require('../model/prismaQueries');
 
 
 
@@ -43,9 +43,9 @@ const postCreateUser = [validateUser, async (req, res) => {
         const salt = saltHash.salt;
         const hash = saltHash.hash;
         let role ='';
-        if (isAdmin) {
+        if (isAdmin == 'true') {
             role = 'ADMIN';
-        }
+        } 
 
         const newUser = await createUser(fullname, username, email, salt, hash, role);
 
@@ -83,5 +83,37 @@ const postEditUser = async (req, res) => {
     }
 }
 
+const postDeleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-module.exports = { postCreateUser, postEditUser };
+        await deleteUser(id);
+
+        return res.json({Success: 'User deleted successfully'})
+
+    } catch (err) {
+        console.error('Database error:', err)
+        return res.status(500).json({error: 'An error occurred while processing your request. Please try again.',
+            data: req.body
+        });
+    }
+}
+
+const getUsers = async (req, res) => {
+    try {
+        const allUsers = await getAllUser();
+
+        const { basicUsers, adminUsers } = allUsers;
+        
+
+        return res.json({Success: 'List of users', basicUsers, adminUsers})
+    } catch (err) {
+        console.error('Database error:', err)
+        return res.status(500).json({error: 'An error occurred while processing your request. Please try again.',
+            data: req.body
+        });
+    }
+}
+
+
+module.exports = { postCreateUser, postEditUser, postDeleteUser, getUsers };
