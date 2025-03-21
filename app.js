@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 })
 
 // Routes
-app.use('/signup', userRouter);
+app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/home', homeRouter);
 

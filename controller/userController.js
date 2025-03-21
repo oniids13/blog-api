@@ -1,6 +1,7 @@
 const { body, validationResult } = require('express-validator');
 const {genPassword} = require('../lib/passwordUtil');
-const { createUser } = require('../model/prismaQueries');
+const { createUser, updateUser } = require('../model/prismaQueries');
+
 
 
 const alphaErr = 'must oly contain letters.';
@@ -59,4 +60,28 @@ const postCreateUser = [validateUser, async (req, res) => {
 
 
 
-module.exports = { postCreateUser };
+const postEditUser = async (req, res) => {
+    try {
+        const { username, email, isAdmin } = req.body;
+        const { id } = req.params;
+
+        let role ='';
+        if (isAdmin == 'true') {
+            role = 'ADMIN';
+        } else if (isAdmin == 'false') {
+            role = 'BASIC'
+        };
+
+        const updatedUser = await updateUser(id, username, email, role)
+
+        return res.json({Success: updatedUser})
+    } catch (err) {
+        console.error('Database error: ', err)
+        return res.status(500).json({error: 'An error occurred while processing your request. Please try again.',
+            data: req.body
+        });
+    }
+}
+
+
+module.exports = { postCreateUser, postEditUser };

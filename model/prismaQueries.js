@@ -179,4 +179,24 @@ const createComment = async (content, postId, authorId) => {
 }
 
 
-module.exports = { createUser, createPost, getAllPost, getUserLogIn, getUser, createComment };
+const updateUser = async (id, username, email, role) => {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                username,
+                email,
+                role
+            }
+        })
+
+        return updatedUser;
+    } catch (err) {
+        console.error("Error updating user:", err)
+        throw err;
+    }
+}
+
+module.exports = { createUser, createPost, getAllPost, getUserLogIn, getUser, createComment, updateUser };
