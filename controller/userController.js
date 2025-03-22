@@ -32,7 +32,9 @@ const postCreateUser = [validateUser, async (req, res) => {
     if (!errors.isEmpty()) {
         const errorsArray = errors.array();
 
-        return res.json({error: errorsArray});
+        return res.status(500).json({error: errorsArray,
+            data: req.body
+        });
     }
 
     try {
@@ -49,7 +51,7 @@ const postCreateUser = [validateUser, async (req, res) => {
 
         const newUser = await createUser(fullname, username, email, salt, hash, role);
 
-        return res.json({Sucess: newUser});
+        return res.status(201).json({Sucess: newUser});
     } catch (err) {
         console.error('Database Error: ', err);
         return res.status(500).json({error: 'An error occurred while processing your request. Please try again.',
@@ -74,7 +76,7 @@ const postEditUser = async (req, res) => {
 
         const updatedUser = await updateUser(id, username, email, role)
 
-        return res.json({Success: updatedUser})
+        return res.status(201).json({Success: updatedUser})
     } catch (err) {
         console.error('Database error: ', err)
         return res.status(500).json({error: 'An error occurred while processing your request. Please try again.',
@@ -89,7 +91,7 @@ const postDeleteUser = async (req, res) => {
 
         await deleteUser(id);
 
-        return res.json({Success: 'User deleted successfully'})
+        return res.status(201).json({Success: 'User deleted successfully'})
 
     } catch (err) {
         console.error('Database error:', err)
@@ -106,7 +108,7 @@ const getUsers = async (req, res) => {
         const { basicUsers, adminUsers } = allUsers;
         
 
-        return res.json({Success: 'List of users', basicUsers, adminUsers})
+        return res.status(201).json({Success: 'List of users', basicUsers, adminUsers})
     } catch (err) {
         console.error('Database error:', err)
         return res.status(500).json({error: 'An error occurred while processing your request. Please try again.',

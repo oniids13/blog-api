@@ -55,7 +55,7 @@ const updateUser = async (id, username, email, role) => {
 
 const deleteUser = async (id) => {
     try {
-        const deleteUser = await prisma.user.delete({
+        await prisma.user.delete({
             where: {
                 id
             }
@@ -222,7 +222,85 @@ const getAllPost = async (isPublished) => {
     }
 }
 
+const getPost = async (id) => {
+    try {
+        const post = await prisma.post.findUnique({
+            where: {
+                id
+            },
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                createdAt: true,
+                published: true,
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                    }
+                },
+                comments: {
+                    select: {
+                        id: true,
+                        content: true,
+                        createdAt: true,
+                        author: {
+                            select: {
+                                id: true,
+                                username: true,             
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return post;
+    } catch (err) {
+        console.error('Error fetching post: ', err)
+        throw err;
+    } finally {
+        await prisma.$disconnect();
+    }
+}
 
+
+const editPost = async(postId, title, content, authorId) => {
+    try {
+        const editedPost = await prisma.post.update({
+            where: {
+                id: postId,
+                authorId
+            }, data: {
+                title,
+                content,
+            }, select: {
+                title: true,
+                content: true
+            }
+        })
+
+        return editedPost;
+    } catch (err) {
+        console.error('Error updating posts', err);
+        throw err;
+    }
+}
+
+const deletePost = async (postId) => {
+    try {
+        await prisma.post.delete({
+            where: {
+                id: postId
+            }
+        })
+
+        return {success: 'Post Deleted.'}
+    } catch (err) {
+        console.error('Error deleting posts', err);
+        throw err;
+    }
+}
 
 // Comment related queries
 
@@ -249,7 +327,60 @@ const createComment = async (content, postId, authorId) => {
     }
 }
 
+const editComment = async (commentId, userId, content) => {
+    try {
+
+        const existingComment = await prisma.comment.findUnique({
+            where: { id: commentId }
+        });
+
+        if (!existingComment) {
+            throw new Error("Comment not found.");
+        }
+
+        if (existingComment.authorId !== userId) {
+            throw new Error("Unauthorized: You can only edit your own comments.");
+        }
+
+        const updatedComment = await prisma.comment.update({
+            where: {
+                id: commentId,
+            },
+            data: {
+                content
+            },
+            select: {
+                id: true,
+                content: true
+            }
+        });
+
+        return updatedComment
+    } catch (err) {
+        console.error("Error updating comment: ", err)
+        throw err;
+    }
+}
+
+const deleteComment = async (commentId, userId) => {
+    try {
+        const existingComment = await prisma.comment.findUnique({
+            where: {id: commentId}
+        });
+
+        if (existingComment.authorId !== userId) {
+            throw new Error("Unauthorized: You can only delete your own comments.");
+        }
+
+        await prisma.comment.delete({
+            where: {id: commentId}
+        });
+        return { success: true, message: "Comment deleted successfully." };
+    } catch (err) {
+        console.error("Error deleting comment:", err);
+        throw err;
+    }
+}
 
 
-
-module.exports = { createUser, createPost, getAllPost, getUserLogIn, getUser, createComment, updateUser, deleteUser, getAllUser };
+module.exports = { createUser, createPost, getAllPost, getUserLogIn, getUser, createComment, updateUser, deleteUser, getAllUser, editPost, getPost, deletePost, editComment, deleteComment };

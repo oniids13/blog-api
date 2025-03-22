@@ -1,4 +1,5 @@
-const { getAllPost, createPost, createComment } = require('../model/prismaQueries');
+const { success } = require('../config/jwtStrategy');
+const { getAllPost, createPost, createComment, editPost, getPost, deletePost, editComment, deleteComment } = require('../model/prismaQueries');
 
 
 
@@ -20,19 +21,30 @@ const getAllPosts = async (req, res) => {
     
 }
 
+const getSinglePost = async (req, res) => {
+    try {
+        const {postId} = req.params;
+
+        const getSinglePost = await getPost(postId);
+
+        return res.status(201).json({success: true, getSinglePost})
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+    
+}
 
 const postCreatePost = async (req, res) => {
     try {
-        console.log("User Data:", req.user);
-
+   
         if (!req.user) {
             return res.status(401).json({error: 'Unauthorized: No user data found.'})
         }
 
         const userID = req.user.id;
-        const userName = req.user.username;
 
-        console.log(userID, userName)
+
 
         const { title, content} = req.body;
         const published = req.body.published === "true" ? true : req.body.published === "false" ? false : req.body.published;
@@ -47,6 +59,46 @@ const postCreatePost = async (req, res) => {
     }
     
 }
+
+
+const postEditPost = async ( req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({error: 'Unauthorized: No user data found.'})
+        }
+
+        const authorId = req.user.id;
+        const {postId } = req.params;
+        const { title, content } = req.body;
+
+        const updatedPost = await editPost(postId, title, content, authorId);
+
+        return res.status(201).json({success: true, updatedPost})
+
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+}
+
+
+const deleteSinglePost = async (req, res) => {
+    try {
+        const {postId} = req.params
+        console.log(postId)
+
+        await deletePost(postId);
+
+        return res.status(201).json({sucess: true, deletedPost: `${postId}`})
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+    
+}
+
+
 
 const postCreateComment = async (req, res) => {
     try {
@@ -67,5 +119,34 @@ const postCreateComment = async (req, res) => {
     }
 }
 
+const putEditComment = async (req, res) => {
+    try {
+        const {commentId} = req.params;
+        const { content } = req.body;
+        const userId = req.user.id;
 
-module.exports = { getAllPosts, postCreatePost, postCreateComment };
+        const updatedComment = await editComment(commentId, userId, content)
+
+        return res.status(201).json({success: true, updatedComment})
+    } catch (err) {
+        console.error("Error creating comment: ", err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+}
+
+
+const deleteUserComment = async (req, res) => {
+    try {
+        const {commentId} = req.params;
+        const userId = req.user.id;
+
+        await deleteComment(commentId, userId)
+
+        return res.status(201).json({success: true, deleted: 'Comment deleted.'})
+    } catch (err) {
+        console.error("Error creating comment: ", err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+}
+
+module.exports = { getAllPosts, postCreatePost, postCreateComment, postEditPost, getSinglePost, deleteSinglePost, putEditComment, deleteUserComment };
