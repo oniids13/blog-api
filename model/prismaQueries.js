@@ -315,7 +315,7 @@ const createComment = async (content, postId, authorId) => {
                 id: true,
                 content: true,
                 createdAt: true,
-                author: {select: {username: true}},
+                author: {select: {username: true, id:true}},
                 post: {select: {title:true}}
             }
         });

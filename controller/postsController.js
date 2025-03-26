@@ -10,7 +10,7 @@ const getAllPosts = async (req, res) => {
 
         const allPosts = publishedPosts.concat(unpublishedPosts)
         if (allPosts.length > 0) {
-            return res.status(201).json({ success: true, publishedPosts, unpublishedPosts });
+            return res.status(201).json({ success: "All Posts", publishedPosts, unpublishedPosts });
         }
 
         return res.json({error: "No Posts Yet."})

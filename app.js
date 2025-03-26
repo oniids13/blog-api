@@ -29,6 +29,9 @@ app.get('/', (req, res) => {
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/posts', postsRouter);
+app.post('/logout', (req ,res) => {
+    res.status(200).json({ message: "Logged out successfully" });
+})
 
 app.listen(3000, () => {
     console.log('http://localhost:3000');
