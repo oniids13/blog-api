@@ -1,6 +1,7 @@
 const express = require('express');
 const jwtStrategy = require('./config/jwtStrategy');
 const passport = require('passport');
+const cors = require('cors');
 //Router modules
 const userRouter = require('./routes/userRouter');
 const loginRouter = require('./routes/loginRouter');
@@ -8,6 +9,11 @@ const postsRouter = require('./routes/postsRouter');
 
 const app = express();
 
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));

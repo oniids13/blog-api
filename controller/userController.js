@@ -47,7 +47,9 @@ const postCreateUser = [validateUser, async (req, res) => {
         let role ='';
         if (isAdmin == 'true') {
             role = 'ADMIN';
-        } 
+        } else {
+            role = 'BASIC';
+        }
 
         const newUser = await createUser(fullname, username, email, salt, hash, role);
 

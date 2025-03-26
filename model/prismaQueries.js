@@ -27,7 +27,7 @@ const createUser = async (fullname, username, email, salt, hash, role) => {
     
         return user;
     } catch (err) {
-        console.error('Error creating new user: ', error)
+        console.error('Error creating new user: ', err)
         throw err;
     }
     

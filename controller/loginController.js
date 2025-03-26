@@ -9,13 +9,14 @@ const secretKey = process.env.JWT_SECRETKEY;
 const postLogin = async (req, res) => {
     let {email, password} = req.body;
 
+    console.log("Login request received with email:", email);
+
     const user = await getUserLogIn(email, password);
 
     console.log('User:', user);
 
     if (!user || !user.id) {
-        console.error("Login failed: Missing user or user ID");
-        return res.status(401).json({ error: "Invalid credentials" });
+        return res.status(401).json({ error: "Login failed: Wrong user or user ID" });
     }
 
     const tokenPayload = {
