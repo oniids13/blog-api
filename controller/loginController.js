@@ -32,7 +32,9 @@ const postLogin = async (req, res) => {
     return res.status(200).json({
         message: 'Auth Passed',
         token,
-        userId: user.id
+        userId: user.id,
+        name: user.fullname,
+        username: user.username,
     });
 };
 
