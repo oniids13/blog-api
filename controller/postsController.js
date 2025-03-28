@@ -23,11 +23,17 @@ const getAllPosts = async (req, res) => {
 
 const getSinglePost = async (req, res) => {
     try {
-        const {postId} = req.params;
+        let {postId} = req.params;
+
+
+        if (postId.startsWith(":")) {
+            postId = postId.substring(1);
+        }
 
         const getSinglePost = await getPost(postId);
+    
 
-        return res.status(201).json({success: true, getSinglePost})
+        return res.status(201).json({success: true, post: getSinglePost})
     } catch (err) {
         console.error(err);
         return res.status(500).json({ success: false, error: err.message });
