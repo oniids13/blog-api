@@ -22,7 +22,8 @@ const postLogin = async (req, res) => {
     const tokenPayload = {
         id: user.id,
         email: user.email,
-        username: user.username
+        username: user.username,
+        role: user.role
     };
 
 
@@ -35,6 +36,7 @@ const postLogin = async (req, res) => {
         userId: user.id,
         name: user.fullname,
         username: user.username,
+        role: user.role
     });
 };
 
