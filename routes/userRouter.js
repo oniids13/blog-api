@@ -7,6 +7,6 @@ const passport = require('passport')
 
 userRouter.post('/signup', postCreateUser);
 userRouter.post('/:id/edit', passport.authenticate('jwt', {session: false}), postEditUser);
-userRouter.post('/:id/delete', passport.authenticate('jwt', {session: false}), postDeleteUser );
+userRouter.delete('/:id/delete', passport.authenticate('jwt', {session: false}), postDeleteUser );
 userRouter.get('/all', passport.authenticate('jwt', {session: false}), getUsers );
 module.exports = userRouter;

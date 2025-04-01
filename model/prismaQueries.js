@@ -287,6 +287,21 @@ const editPost = async(postId, title, content, authorId) => {
     }
 }
 
+const publishPost = async (postId) => {
+    try {
+        await prisma.post.update({
+            where: {
+                id: postId
+            }, data: {
+                published: true
+            }
+        })
+    } catch (err) {
+        console.error('Error publishing post.', err);
+        throw err;
+    }
+}
+
 const deletePost = async (postId) => {
     try {
         await prisma.post.delete({
@@ -383,4 +398,4 @@ const deleteComment = async (commentId, userId) => {
 }
 
 
-module.exports = { createUser, createPost, getAllPost, getUserLogIn, getUser, createComment, updateUser, deleteUser, getAllUser, editPost, getPost, deletePost, editComment, deleteComment };
+module.exports = { createUser, createPost, getAllPost, getUserLogIn, getUser, createComment, updateUser, deleteUser, getAllUser, editPost, getPost, deletePost, editComment, deleteComment, publishPost };

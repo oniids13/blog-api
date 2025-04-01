@@ -1,5 +1,5 @@
 const { success } = require('../config/jwtStrategy');
-const { getAllPost, createPost, createComment, editPost, getPost, deletePost, editComment, deleteComment } = require('../model/prismaQueries');
+const { getAllPost, createPost, createComment, editPost, getPost, deletePost, editComment, deleteComment, publishPost } = require('../model/prismaQueries');
 
 
 
@@ -92,7 +92,7 @@ const postEditPost = async ( req, res) => {
 const deleteSinglePost = async (req, res) => {
     try {
         const {postId} = req.params
-        console.log(postId)
+
 
         await deletePost(postId);
 
@@ -104,7 +104,21 @@ const deleteSinglePost = async (req, res) => {
     
 }
 
+const putPublishPost = async (req, res) => {
+    try {
+        const {postId} = req.params
 
+        await publishPost(postId);
+
+        return res.status(201).json({success: true, publishedPost: `${postId}`})
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({success: false, error: err.message});
+    }
+}
+
+
+// Comments
 
 const postCreateComment = async (req, res) => {
     try {
@@ -155,4 +169,4 @@ const deleteUserComment = async (req, res) => {
     }
 }
 
-module.exports = { getAllPosts, postCreatePost, postCreateComment, postEditPost, getSinglePost, deleteSinglePost, putEditComment, deleteUserComment };
+module.exports = { getAllPosts, postCreatePost, postCreateComment, postEditPost, getSinglePost, deleteSinglePost, putEditComment, deleteUserComment, putPublishPost };
